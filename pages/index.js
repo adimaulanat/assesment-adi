@@ -3,13 +3,21 @@ import { Content, Header } from "antd/lib/layout/layout";
 import { Navbar, ProductList } from "components";
 import useProduct from "hooks/use-product";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-function Home({ per_page, page, category_name }) {
+function Home() {
     const { getProductCategory, getProduct } = useProduct();
+    const router = useRouter();
+
+    const { query } = router;
+
     useEffect(() => {
         getProductCategory();
-        getProduct({ per_page, page, category_name });
+        if (query) {
+            const { per_page, page, category_name } = query;
+            getProduct({ per_page, page, category_name });
+        }
     }, []);
 
     return (
@@ -33,18 +41,6 @@ function Home({ per_page, page, category_name }) {
             </Layout>
         </div>
     );
-}
-
-export async function getServerSideProps(ctx) {
-    const { per_page = 10, page = 1, category_name = "" } = ctx.query;
-
-    return {
-        props: {
-            page,
-            per_page,
-            category_name,
-        },
-    };
 }
 
 export default Home;
